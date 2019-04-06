@@ -15,4 +15,12 @@ public class Cell {
     public Location getLocation() {
         return location;
     }
+
+    public void die() {
+        this.isAlive = false;
+    }
+
+    public void live() {
+        this.isAlive = true;
+    }
 }
