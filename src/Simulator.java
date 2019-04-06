@@ -1,3 +1,5 @@
+import Exceptions.CellNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,24 +17,68 @@ public class Simulator {
     }
 
     public void runSimulation() {
+        List<Cell> nextGeneration = cells;
+
+        int index = 0;
         for (Cell cell : cells) {
-            if (cell.isAlive()) {
-                checkNeighbours(cell);
+            int numNeighbours = checkNeighbours(cell);
+
+            // Te weinig buren, cel gaat dood
+            if ((numNeighbours < 2) || (numNeighbours > 3)) {
+                nextGeneration.get(index).die();
             }
+            // Cel blijft leven
+            if (numNeighbours == 2) {
+                nextGeneration.get(index).live();
+            }
+            // Cel blijft leven of er wordt een nieuwe geboren
+            if (numNeighbours == 3) {
+                nextGeneration.get(index).live();
+            }
+            index++;
         }
+        this.cells = nextGeneration;
     }
 
     public void populate() {
-        Random random = new Random();
+//        Random random = new Random();
+//
+//        for (int row = 0; row < width; row++) {
+//            for (int col = 0; col < height; col++) {
+//                boolean isAlive = random.nextBoolean();
+//                Location location = new Location(row, col);
+//                Cell cell = new Cell(isAlive, location);
+//                cells.add(cell);
+//            }
+//        }
 
-        for (int row = 0; row < width; row++) {
-            for (int col = 0; col < height; col++) {
-                boolean isAlive = random.nextBoolean();
-                Location location = new Location(row, col);
-                Cell cell = new Cell(isAlive, location);
-                cells.add(cell);
-            }
-        }
+        Cell cell = new Cell(true, new Location(0, 0));
+        cells.add(cell);
+
+        cell = new Cell(true, new Location(0, 2));
+        cells.add(cell);
+
+        cell = new Cell(true, new Location(1, 0));
+        cells.add(cell);
+
+        cell = new Cell(true, new Location(1, 2));
+        cells.add(cell);
+
+        cell = new Cell(true, new Location(2, 2));
+        cells.add(cell);
+
+        /**
+         Input:
+         x |  | x
+         --------
+         x |  | x
+         --------
+           |  | x
+
+         Output:
+         
+         */
+
         runSimulation();
     }
 
