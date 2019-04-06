@@ -64,12 +64,11 @@ public class Simulator {
 
             // Zoek Noord-West
             numNeighbours = findCellByLocation(col - 1, row - 1) ? numNeighbours + 1 : numNeighbours;
-
-            return numNeighbours;
-
         } catch (CellNotFoundException e) {
             e.printStackTrace();
         }
+
+        return numNeighbours;
     }
 
     private boolean findCellByLocation(int col, int row) throws CellNotFoundException {
