@@ -4,82 +4,62 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Simulator {
+public class Simulator implements Cloneable {
     private int height;
     private int width;
     private List<Cell> cells;
+    private List<Cell> nextGeneration;
 
     public Simulator(int height, int width) {
         this.height = height;
         this.width = width;
 
         this.cells = new ArrayList<>();
+        this.nextGeneration = new ArrayList<>();
     }
 
-    public void runSimulation() {
-        List<Cell> nextGeneration = cells;
+    public void runSimulation(int steps) {
 
         int index = 0;
-        for (Cell cell : cells) {
-            int numNeighbours = checkNeighbours(cell);
+        for (int i = 0; i < steps; i++)
+        {
+            for (Cell cell : cells) {
+                // Voeg alle bestaande cellen toe aan next generation om vervolgens
+                // het spel te laten spelen.
+                nextGeneration.add(new Cell(cell.isAlive(), cell.getLocation()));
+                int numNeighbours = checkNeighbours(cell);
 
-            // Te weinig buren, cel gaat dood
-            if ((numNeighbours < 2) || (numNeighbours > 3)) {
-                nextGeneration.get(index).die();
+                // Te weinig buren, cel gaat dood
+                if ((numNeighbours < 2) || (numNeighbours > 3)) {
+                    nextGeneration.get(index).die();
+                }
+                // Cel blijft leven
+                if (numNeighbours == 2) {
+                    nextGeneration.get(index).live();
+                }
+                // Cel blijft leven of er wordt een nieuwe geboren
+                if (numNeighbours == 3) {
+                    nextGeneration.get(index).live();
+                }
+                index++;
             }
-            // Cel blijft leven
-            if (numNeighbours == 2) {
-                nextGeneration.get(index).live();
-            }
-            // Cel blijft leven of er wordt een nieuwe geboren
-            if (numNeighbours == 3) {
-                nextGeneration.get(index).live();
-            }
-            index++;
+            this.cells = nextGeneration;
         }
-        this.cells = nextGeneration;
     }
 
     public void populate() {
-//        Random random = new Random();
-//
-//        for (int row = 0; row < width; row++) {
-//            for (int col = 0; col < height; col++) {
-//                boolean isAlive = random.nextBoolean();
-//                Location location = new Location(row, col);
-//                Cell cell = new Cell(isAlive, location);
-//                cells.add(cell);
-//            }
-//        }
+        Random random = new Random();
 
-        Cell cell = new Cell(true, new Location(0, 0));
-        cells.add(cell);
+        for (int row = 0; row < width; row++) {
+            for (int col = 0; col < height; col++) {
+                boolean isAlive = random.nextBoolean();
+                Location location = new Location(row, col);
+                Cell cell = new Cell(isAlive, location);
+                cells.add(cell);
+            }
+        }
 
-        cell = new Cell(true, new Location(0, 2));
-        cells.add(cell);
-
-        cell = new Cell(true, new Location(1, 0));
-        cells.add(cell);
-
-        cell = new Cell(true, new Location(1, 2));
-        cells.add(cell);
-
-        cell = new Cell(true, new Location(2, 2));
-        cells.add(cell);
-
-        /**
-         Input:
-         x |  | x
-         --------
-         x |  | x
-         --------
-           |  | x
-
-         Output:
-         
-         */
-
-        runSimulation();
+        runSimulation(10);
     }
 
     private int checkNeighbours(Cell cell) {
