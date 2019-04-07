@@ -1,14 +1,13 @@
 import Exceptions.CellNotFoundException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Simulator implements Cloneable {
     private int height;
     private int width;
     private List<Cell> cells;
     private List<Cell> nextGeneration;
+    private View view;
 
     public Simulator(int height, int width) {
         this.height = height;
@@ -16,13 +15,14 @@ public class Simulator implements Cloneable {
 
         this.cells = new ArrayList<>();
         this.nextGeneration = new ArrayList<>();
+        this.view = new ViewStdDraw(width, height);
     }
 
     public void runSimulation(int steps) {
 
-        int index = 0;
         for (int i = 0; i < steps; i++)
         {
+            int index = 0;
             for (Cell cell : cells) {
                 // Voeg alle bestaande cellen toe aan next generation om vervolgens
                 // het spel te laten spelen.
@@ -34,7 +34,7 @@ public class Simulator implements Cloneable {
                     nextGeneration.get(index).die();
                 }
                 // Cel blijft leven
-                if (numNeighbours == 2) {
+                if (numNeighbours == 2 && cell.isAlive()) {
                     nextGeneration.get(index).live();
                 }
                 // Cel blijft leven of er wordt een nieuwe geboren
@@ -43,7 +43,14 @@ public class Simulator implements Cloneable {
                 }
                 index++;
             }
-            this.cells = nextGeneration;
+            this.cells = new ArrayList<>(nextGeneration);
+            nextGeneration.clear();
+            this.view.drawGeneration(cells);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
@@ -59,7 +66,7 @@ public class Simulator implements Cloneable {
             }
         }
 
-        runSimulation(10);
+        runSimulation(1000);
     }
 
     private int checkNeighbours(Cell cell) {
