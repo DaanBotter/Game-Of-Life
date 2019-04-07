@@ -12,7 +12,7 @@ public class GameOfLife {
     }
 
     public static void main(String[] args) {
-        new GameOfLife(50, 20);
+        new GameOfLife(12, 12);
     }
 
 }
